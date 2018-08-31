@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import * as firebase from "firebase";
 import { Actions, Router, Scene } from "react-native-router-flux";
-import * as functions from "../../funcoes.js";
+import * as functions from "../../global/funcoes.js";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -65,6 +65,7 @@ export default class EncomendasAndamento extends Component {
           key: data.key,
           data: data.val()
         });
+        console.log(items);
       });
       this.setState({ dataSource: this.state.dataSource.cloneWithRows(items) });
     });
@@ -105,7 +106,7 @@ export default class EncomendasAndamento extends Component {
                 preço: price,
                 produto: prod,
                 lucro: lucro,
-                dia: functions.adicionarNaGeladeira()
+                dia: functions.dataHoje()
               });
           });
         firebase

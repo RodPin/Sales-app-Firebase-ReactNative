@@ -5,86 +5,99 @@ import {
   TextInput,
   Button,
   ActivityIndicator,
-  Picker
+  Picker,
+  StyleSheet,
+  Platform,
+  Animated,
+  Image,
+  Dimensions
 } from "react-native";
 import * as firebase from "firebase";
+import { Actions, Router, Scene } from "react-native-router-flux";
+import stl from "../../global/styles";
+
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const logo = require("../../img/naroca.png");
 
 export default class CadastroProdutos extends Component {
-  // static navigationOptions = ({ navigation }) => ({
-  //     headerTitle: "Cadastro",
-  // });
-
-  state = {
-    email: "",
-    password: "",
-    error: "",
-    nome: "",
-    tipo: "",
-    loading: false
-  };
-
-  onCadastroPress(x) {
-    this.setState({ error: "", loading: true });
-
-    //Login was not successful, let's create a new accoun
-
-    var usersRef = this.getRef().child("queijos/" + x);
-    usersRef
-      .set({
-        quantidade: 2,
-        preço: 3
-      })
-      .catch(error => {
-        this.setState({ error: error.message, loading: false });
-      });
+  constructor(props) {
+    super(props);
+    this.state = {
+      produto: ""
+    };
   }
-
   getRef() {
     return firebase.database().ref();
   }
-  // definirTipoUsuario(id,x){
-  //         var usersRef =this.firebase.database().ref().child(id);
-  //         usersRef.set({
-  //         tipoUsuario:x
-  //         })
-  // }
 
-  renderButtonOrSpinner() {
-    if (this.state.loading) {
-      return <ActivityIndicator />;
+  cadastrarProduto(prod) {
+    if (prod == "") {
+      alert("Preencha o campo do nome do produto");
+    } else {
+      firebase
+        .database()
+        .ref()
+        .child("Produtos/")
+        .push({
+          produto: prod
+        });
+
+      firebase
+        .database()
+        .ref()
+        .child("EstoqueGeladeira/" + prod)
+        .set({
+          quantidade: 0
+        });
+
+      alert("Encomenda Adicionada");
+      this.setState({
+        produto: ""
+      });
     }
-    return (
-      <Button onPress={this.onCadastroPress.bind(this)} title="CADASTRE-SE" />
-    );
   }
+
+  girar() {}
+
   render() {
     return (
-      <View>
-        <Text>CADASTRE O PRODUTO</Text>
-        <TextInput
-          style={{
-            height: 40,
-            borderColor: "gray",
-            borderWidth: 1,
-            backgroundColor: "white"
+      <View style={stl.mainBackground}>
+        <View>
+          <Text>Produto:</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={produto => this.setState({ produto })}
+            value={this.state.produto}
+          />
+        </View>
+
+        <Button
+          title="enviar"
+          onPress={() => {
+            this.cadastrarProduto(this.state.produto);
           }}
-          label="Nome"
-          placeholder="Nome do Produto"
-          value={this.state.nome}
-          onChangeText={nome => this.setState({ nome })}
+          color="green"
         />
 
-        <Text style={styles.errorTextStyle}>{this.state.error}</Text>
-        {this.renderButtonOrSpinner(this.state.nome)}
+        <Image source={logo} style={styles.logo} />
       </View>
     );
   }
 }
-const styles = {
-  errorTextStyle: {
-    color: "red", //this.error=='Usuario Cadastrado' ?  'green': 'red'  n funciona essa merda---=--=-
-    alignSelf: "center",
-    paddingTop: 10,
-    paddingBottom: 10
+
+const styles = StyleSheet.create({
+  input: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    backgroundColor: "white"
+  },
+  logo: {
+    height: SCREEN_WIDTH * 0.65,
+    width: SCREEN_WIDTH * 0.65,
+    marginLeft: SCREEN_WIDTH * 0.2
+  },
+  viewGeral: {
+    flex: 1
   }
-};
+});

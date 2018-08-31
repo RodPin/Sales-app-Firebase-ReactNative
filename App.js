@@ -9,33 +9,39 @@ import {
   SwitchNavigator
 } from "react-navigation";
 //npm install --save redux react-redux redux-thunk
+import stl from "./global/styles";
+import FirebaseConfig from "./keys";
+
 import EstoqueScreen from "./screens/EstoqueScreen";
 import CadScreen from "./screens/CadastroScreen";
 import Loading from "./screens/Loading";
 import LogScreen from "./screens/LogScreen";
-import EstoqueAdminScreen from "./screens/EstoqueAdminScreen";
-import EstoqueVendScreen from "./screens/EstoqueVendScreen";
 
+import EstoqueCadaVendedor from "./screens/estoqueCadaVendedor";
+import estoqueKdVendEVendas from "./screens/estqVendas";
+
+import MainAdmin from "./screens/admin/MainAdmin";
 import CadastroProdutos from "./screens/admin/cadastroProdutos";
+import CadastroVendedor from "./screens/admin/cadastroVendedores";
+
+import ComprarProdutos from "./screens/admin/comprarProdutos";
+import Vendedores from "./screens/admin/vendedores/vendedores";
+
+import EstoqueGeladeira from "./screens/admin/EstoqueGeladeira";
 import AddScreen from "./screens/AddScreen";
 import EncomendasMain from "./screens/admin/EncomendasMain";
 import EncomendasFinalizada from "./screens/admin/EncomendasFinalizadas";
 import EncomendasAndamento from "./screens/admin/EncomendasAndamento";
 import EncomendasAdd from "./screens/admin/EncomendasAdd";
 
+import TransferirParaVendedor from "./screens/admin/transfGeladeiraPVend";
+import CriarClasse from "./screens/admin/criarClasse";
+
 //https://wpesc.cos.ufrj.br:8003/index.php?zone=wpesc&redirurl=http%3A%2F%2Fwww.msftconnecttest.com%2Fredirect
 
 export default class App extends React.Component {
   componentWillMount() {
-    var config = {
-      apiKey: "AIzaSyCBv6PFQ5IpK-SS18tV-9equs2vQa-RLeM",
-      authDomain: "naroca-88d69.firebaseapp.com",
-      databaseURL: "https://naroca-88d69.firebaseio.com",
-      projectId: "naroca-88d69",
-      storageBucket: "",
-      messagingSenderId: "352745983174"
-    };
-    firebase.initializeApp(config);
+    firebase.initializeApp(FirebaseConfig.Firebase);
   }
   ////na hora do login ir pra onde tem q ir
   //   const usuario = firebase.auth();
@@ -54,41 +60,51 @@ export default class App extends React.Component {
   //   return (
   //     //com esse provider store todos os components que estao dentro do main navigator podem ser relacionados com a  store via react-redux
   //     <Router>
-  //       <Scene key='app'>
-  //         <Scene key='loading' component={Loading} hideNavBar />
-  //         <Scene key='login' component={LogScreen} hideNavBar  />
-  //         <Scene key='cadastro' component={CadScreen} hideNavBar />
-  //         <Scene key='estoque' component={EstoqueScreen} hideNavBar  />
-  //         <Scene key='admin' component={EstoqueAdminScreen} hideNavBar />
-  //         <Scene key='vendedor' component={EstoqueVendScreen} hideNavBar  />
+  //       <Scene key="app">
+  //         <Scene key="MainAdmin" component={MainAdmin} hideNavBar />
+  //         <Scene
+  //           key="CadastroVendedor"
+  //           component={CadastroVendedor}
+  //           hideNavBar
+  //         />
+  //         <Scene key="CriarClasse" component={CriarClasse} hideNavBar />
 
-  //         <Scene key='cadastroProdutos' component={CadastroProdutos} hideNavBar  />
-  //         <Scene key='add' component={AddScreen} hideNavBar  />
-
-  //         <Scene key='encomendas' component={EncomendasMain} />
-  //         <Scene key='encomendasFinalizadas' component={EncomendasFinalizada} />
-  //         <Scene key='encomendasAndamento' component={EncomendasAndamento} />
-  //         <Scene key='encomendasAdd' component={EncomendasAdd} />
-  //        </Scene>
+  //         <Scene key="encomendas" component={EncomendasMain} />
+  //         <Scene key="encomendasFinalizadas" component={EncomendasFinalizada} />
+  //         <Scene key="encomendasAndamento" component={EncomendasAndamento} />
+  //         <Scene key="encomendasAdd" component={EncomendasAdd} />
+  //       </Scene>
   //     </Router>
   //   );
   // }
 
   render() {
-    const MainNavigator = TabNavigator(
+    const geladeiraStack = TabNavigator(
       {
-        Finalizado: { screen: EncomendasFinalizada },
-        encomendas: { screen: EncomendasAndamento },
-        ADD: { screen: EncomendasAdd }
+        EstoqueGeladeira: {
+          screen: EstoqueGeladeira
+        },
+        ComprarProdutos: { screen: ComprarProdutos }
       },
       {
         tabBarOptions: {
-          style: {
-            backgroundColor: "green"
-          }
+          style: { backgroundColor: "grey" }
         }
       }
     );
+
+    const MainNavigator = StackNavigator({
+      MainAdmin: {
+        screen: MainAdmin
+      },
+      CadastroVendedor: { screen: CadastroVendedor },
+      CriarClasse: { screen: CriarClasse },
+      CadastroProdutos: { screen: CadastroProdutos },
+      geladeiraStack: { screen: geladeiraStack },
+      Vendedores: {
+        screen: Vendedores
+      }
+    });
 
     return (
       <View style={styles.container}>
